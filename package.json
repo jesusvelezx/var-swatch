@@ -112,7 +112,14 @@
           "description": "Show the resolution chain, source location and WCAG contrast on hover."
         }
       }
-    }
+    },
+    "commands": [
+      {
+        "command": "varSwatch.reindex",
+        "title": "Reindex Workspace",
+        "category": "Var Swatch"
+      }
+    ]
   },
   "scripts": {
     "build": "node esbuild.mjs",
