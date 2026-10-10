@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-export type DecorationStyle = 'native' | 'native+variants' | 'none';
+export type DecorationStyle = 'native' | 'native+variants' | 'inline' | 'inline+variants' | 'none';
 
 export interface Config {
   enable: boolean;
@@ -22,7 +22,7 @@ export function readConfig(): Config {
     maxFiles: c.get('maxFiles', 5000),
     loadPaths: c.get('loadPaths', []),
     themes: c.get('themes.enable', true),
-    decorationStyle: c.get<DecorationStyle>('decoration.style', 'native+variants'),
+    decorationStyle: c.get<DecorationStyle>('decoration.style', 'inline+variants'),
     hover: c.get('hover.enable', true),
   };
 }

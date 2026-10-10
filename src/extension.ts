@@ -63,6 +63,9 @@ class VarSwatch implements vscode.Disposable {
   private indexing?: vscode.CancellationTokenSource;
   private refreshTimer?: NodeJS.Timeout;
   private readonly syncTimers = new Map<string, NodeJS.Timeout>();
+  private readonly inlineType = vscode.window.createTextEditorDecorationType({
+    rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+  });
   private readonly variantTypes = [0, 1, 2].map(() =>
     vscode.window.createTextEditorDecorationType({ rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed }),
   );
@@ -91,6 +94,7 @@ class VarSwatch implements vscode.Disposable {
         void this.indexWorkspace();
       }),
       this.output,
+      this.inlineType,
       ...this.variantTypes,
     );
     this.createWatchers();
@@ -303,7 +307,7 @@ class VarSwatch implements vscode.Disposable {
     this.colorProvider?.dispose();
     this.colorProvider = vscode.languages.registerColorProvider(SELECTOR, {
       provideDocumentColors: (doc) => {
-        if (this.config.decorationStyle === 'none') return [];
+        if (!this.usesNativeColors()) return [];
         const a = this.analysis(doc);
         if (!a) return [];
         return a.swatches.map(
@@ -320,6 +324,18 @@ class VarSwatch implements vscode.Disposable {
         return [keep, ...[toHex(c), toRgbString(c), toHslString(c)].map((l) => new vscode.ColorPresentation(l))];
       },
     });
+  }
+
+  private usesNativeColors(): boolean {
+    return this.config.decorationStyle === 'native' || this.config.decorationStyle === 'native+variants';
+  }
+
+  private usesInlineColors(): boolean {
+    return this.config.decorationStyle === 'inline' || this.config.decorationStyle === 'inline+variants';
+  }
+
+  private usesVariantColors(): boolean {
+    return this.config.decorationStyle === 'native+variants' || this.config.decorationStyle === 'inline+variants';
   }
 
   /** Re-registering the provider is the only way to make VS Code re-request colors. */
@@ -372,9 +388,35 @@ class VarSwatch implements vscode.Disposable {
   private updateDecorations(): void {
     for (const editor of vscode.window.visibleTextEditors) {
       const doc = editor.document;
-      const a = this.config.decorationStyle === 'native+variants' ? this.analysis(doc) : undefined;
+      const a = this.usesInlineColors() || this.usesVariantColors() ? this.analysis(doc) : undefined;
+      if (this.usesInlineColors() && a) {
+        const options: vscode.DecorationOptions[] = [];
+        for (const s of a.swatches) {
+          const pos = doc.positionAt(s.end);
+          const hex = toHex(clipToGamut(s.color));
+          const md = new vscode.MarkdownString(`Resolved color: \`${hex}\``);
+          options.push({
+            range: new vscode.Range(pos, pos),
+            hoverMessage: md,
+            renderOptions: {
+              after: {
+                contentText: ' ',
+                backgroundColor: toCss(clipToGamut(s.color)),
+                border: '1px solid rgba(128, 128, 128, 0.75)',
+                width: '0.72em',
+                height: '0.72em',
+                margin: '0 0.1em 0 0.35em',
+                textDecoration: 'none; display: inline-block; vertical-align: middle; border-radius: 2px; box-sizing: border-box;',
+              },
+            },
+          });
+        }
+        editor.setDecorations(this.inlineType, options);
+      } else {
+        editor.setDecorations(this.inlineType, []);
+      }
       this.variantTypes.forEach((type, i) => {
-        if (!a) {
+        if (!a || !this.usesVariantColors()) {
           editor.setDecorations(type, []);
           return;
         }
@@ -394,7 +436,7 @@ class VarSwatch implements vscode.Disposable {
                 border: '1px solid rgba(128, 128, 128, 0.7)',
                 width: '0.7em',
                 height: '0.7em',
-                margin: i === 0 ? '0 0.1em 0 0.25em' : '0 0.1em 0 0',
+                margin: i === 0 && !this.usesInlineColors() ? '0 0.1em 0 0.25em' : '0 0.1em 0 0',
                 textDecoration: 'none; display: inline-block; vertical-align: middle; border-radius: 2px; box-sizing: border-box;',
               },
             },

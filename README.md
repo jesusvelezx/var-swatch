@@ -5,7 +5,7 @@
 VS Code only shows a color square next to literal values such as `white` or `#7c3aed`.
 With `background: var(--purple)` or `color: $purple` you just see a name. Var Swatch
 resolves those references, including through Sass modules, color functions, chains,
-fallbacks and theme overrides, and shows the native color square plus a detailed hover.
+fallbacks and theme overrides, and shows an inline swatch plus a detailed hover.
 
 <!-- TODO: replace with real recordings -->
 ![Swatches next to variables](docs/images/overview.gif)
@@ -55,7 +55,7 @@ in `html`, `vue`, `svelte` and `astro` files.
 | `varSwatch.maxFiles` | `5000` | Upper bound for the initial index. |
 | `varSwatch.loadPaths` | `[]` | Extra Sass load paths, relative to the workspace folder. |
 | `varSwatch.themes.enable` | `true` | Detect theme overrides and show every variant. |
-| `varSwatch.decoration.style` | `native+variants` | `native` (only the native square), `native+variants` (plus small squares for theme variants) or `none` (hover only). |
+| `varSwatch.decoration.style` | `inline+variants` | `inline` (Var Swatch square after the variable), `inline+variants` (plus small squares for theme variants), `native` (VS Code's native square), `native+variants` or `none` (hover only). |
 | `varSwatch.hover.enable` | `true` | Show the resolution hover. |
 
 Command: **Var Swatch: Reindex Workspace**.

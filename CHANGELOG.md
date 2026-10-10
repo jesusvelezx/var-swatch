@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-10
+
+### Changed
+
+- Default variable previews now use Var Swatch inline decorations instead of VS Code's native color square.
+- Added `inline` and `inline+variants` decoration modes while keeping the native modes available.
+
 ## [0.1.1] - 2026-10-10
 
 ### Changed
