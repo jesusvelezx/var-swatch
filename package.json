@@ -11,8 +11,7 @@
     "url": "https://github.com/OWNER/var-swatch.git"
   },
   "engines": {
-    "vscode": "^1.90.0",
-    "node": ">=20"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Visualization",
@@ -127,8 +126,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "package": "vsce package --no-dependencies",
-    "vscode:prepublish": "node esbuild.mjs --production"
+    "package": "node esbuild.mjs --production && vsce package --no-dependencies"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
@@ -138,5 +136,15 @@
     "sass": "^1.105.1",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
+  },
+  "packageManager": "pnpm@11.13.1",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=22"
+    },
+    "packageManager": {
+      "name": "pnpm"
+    }
   }
 }
