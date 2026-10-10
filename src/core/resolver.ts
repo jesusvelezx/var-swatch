@@ -47,6 +47,8 @@ export interface Trace {
   /** Source text of the definition's value. */
   expr?: string;
   note?: string;
+  /** The value this step evaluated to, as CSS text. */
+  result?: string;
   children: Trace[];
 }
 
@@ -162,7 +164,9 @@ export class Request {
       this.stack.push(trace);
     }
     try {
-      return fn();
+      const result = fn();
+      if (trace && this.opts.trace) trace.result = describe(result);
+      return result;
     } finally {
       this.active.delete(key);
       this.depth--;
@@ -887,6 +891,18 @@ const baseName = (p: string): string => p.slice(Math.max(p.lastIndexOf('/'), p.l
 function serializeCall(name: string, args: CallArgs): string {
   if (args.named.size) fail('keyword args in CSS function');
   return `${name}(${args.positional.map(toCssText).join(', ')})`;
+}
+
+function describe(v: unknown): string | undefined {
+  if (typeof v === 'string') return v.trim();
+  if (v && typeof v === 'object' && 'kind' in v) {
+    try {
+      return toCssText(v as Value);
+    } catch {
+      return undefined;
+    }
+  }
+  return undefined;
 }
 
 function truthy(v: Value): boolean {
