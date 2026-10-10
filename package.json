@@ -1,0 +1,135 @@
+{
+  "name": "var-swatch",
+  "displayName": "Var Swatch",
+  "description": "Shows the real color of CSS custom properties, Sass/SCSS and Less variables — including Sass modules, color functions, fallbacks and theme variants.",
+  "version": "0.1.0",
+  "publisher": "jesuscedeno",
+  "license": "MIT",
+  "author": "Jesús Cedeño Vélez",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OWNER/var-swatch.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=20"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "color",
+    "css variables",
+    "custom properties",
+    "scss",
+    "sass",
+    "less",
+    "swatch",
+    "theme"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:css",
+    "onLanguage:scss",
+    "onLanguage:sass",
+    "onLanguage:less",
+    "onLanguage:html",
+    "onLanguage:vue",
+    "onLanguage:svelte",
+    "onLanguage:astro"
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "Var Swatch",
+      "properties": {
+        "varSwatch.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Var Swatch."
+        },
+        "varSwatch.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/*.{css,scss,sass,less}"
+          ],
+          "description": "Glob patterns of stylesheet files to index in the workspace."
+        },
+        "varSwatch.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/build/**",
+            "**/out/**",
+            "**/.git/**",
+            "**/*.min.css"
+          ],
+          "description": "Glob patterns excluded from workspace indexing. Files reached through @use/@import are still resolved on demand."
+        },
+        "varSwatch.maxFiles": {
+          "type": "number",
+          "default": 5000,
+          "description": "Maximum number of files indexed eagerly at startup."
+        },
+        "varSwatch.loadPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra Sass load paths (relative to the workspace folder)."
+        },
+        "varSwatch.themes.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Detect theme overrides ([data-theme], .dark, @media (prefers-color-scheme)) and show every variant."
+        },
+        "varSwatch.decoration.style": {
+          "type": "string",
+          "enum": [
+            "native",
+            "native+variants",
+            "none"
+          ],
+          "enumDescriptions": [
+            "Only the native VS Code color square for the default value.",
+            "Native square plus small extra swatches for each theme variant.",
+            "No swatches (hover only)."
+          ],
+          "default": "native+variants",
+          "description": "How resolved colors are displayed inline."
+        },
+        "varSwatch.hover.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the resolution chain, source location and WCAG contrast on hover."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "package": "vsce package --no-dependencies",
+    "vscode:prepublish": "node esbuild.mjs --production"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/vscode": "1.90.0",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "sass": "^1.105.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}
