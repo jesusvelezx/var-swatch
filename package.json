@@ -1,32 +1,48 @@
 {
   "name": "var-swatch",
   "displayName": "Var Swatch",
-  "description": "Shows the real color of CSS custom properties, Sass/SCSS and Less variables — including Sass modules, color functions, fallbacks and theme variants.",
+  "description": "See the real color behind every CSS and SCSS variable — resolved through chains, @use modules, color functions and themes.",
   "version": "0.1.0",
-  "publisher": "jesuscedeno",
+  "publisher": "uxjesus",
+  "author": {
+    "name": "Jesús Cedeño Vélez",
+    "url": "https://uxjesus.space"
+  },
   "license": "MIT",
-  "author": "Jesús Cedeño Vélez",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/OWNER/var-swatch.git"
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#dbe4ff",
+    "theme": "light"
   },
   "engines": {
     "vscode": "^1.90.0"
   },
   "categories": [
     "Visualization",
+    "Programming Languages",
     "Other"
   ],
   "keywords": [
-    "color",
     "css variables",
-    "custom properties",
     "scss",
     "sass",
-    "less",
+    "color",
     "swatch",
-    "theme"
+    "design tokens",
+    "custom properties",
+    "color preview",
+    "theme",
+    "less"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jesusvelezx/var-swatch"
+  },
+  "bugs": {
+    "url": "https://github.com/jesusvelezx/var-swatch/issues"
+  },
+  "homepage": "https://github.com/jesusvelezx/var-swatch#readme",
+  "pricing": "Free",
   "main": "./dist/extension.js",
   "activationEvents": [
     "onLanguage:css",
