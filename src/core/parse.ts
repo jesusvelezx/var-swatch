@@ -312,6 +312,10 @@ function parseConfig(text: string, open: number, base: number): ConfigEntry[] {
 
 const URL_RE = /^(["'])((?:\\.|(?!\1).)*)\1/;
 
+const MIXIN_CONTEXT: ThemeContext[] = [{ kind: 'scoped', key: 'scoped:@mixin', label: 'inside a mixin' }];
+/** Shared (immutable) classification results: most files repeat the same few selectors. */
+const CONTEXT_CACHE = new Map<string, ThemeContext[]>();
+
 function parseNames(list: string): string[] {
   return list
     .split(',')
@@ -327,6 +331,7 @@ class Builder implements Sink {
   private readonly selectorStack: (string[] | null)[] = [null];
   private readonly atStack: string[][] = [[]];
   private readonly fnStack: (FnDef | null)[] = [null];
+  private readonly blockContexts = new Map<number, ThemeContext[]>();
 
   constructor(
     private readonly src: string,
@@ -543,15 +548,32 @@ class Builder implements Sink {
     this.addSite(valueStart, valueStart + value.length, 'prop');
   }
 
+  /** Theme contexts are shared by every definition of a block (and identical blocks) to keep the index small. */
   private contexts(): ThemeContext[] {
+    const block = this.block;
+    const cached = this.blockContexts.get(block);
+    if (cached) return cached;
+    let result: ThemeContext[] | undefined;
     for (let i = this.stack.length - 1; i > 0; i--) {
       const kind = this.file.blocks[this.stack[i]!]!.kind;
       if (kind === 'mixin' || kind === 'function' || kind === 'include') {
-        return [{ kind: 'scoped', key: 'scoped:@mixin', label: 'inside a mixin' }];
+        result = MIXIN_CONTEXT;
+        break;
       }
     }
-    const selectors = this.selectorStack[this.selectorStack.length - 1] ?? [];
-    return classify(selectors, this.atStack[this.atStack.length - 1]!);
+    if (!result) {
+      const selectors = this.selectorStack[this.selectorStack.length - 1] ?? [];
+      const ats = this.atStack[this.atStack.length - 1]!;
+      const key = selectors.join('\n') + '\0' + ats.join('\n');
+      result = CONTEXT_CACHE.get(key);
+      if (!result) {
+        result = classify(selectors, ats);
+        if (CONTEXT_CACHE.size > 5000) CONTEXT_CACHE.clear();
+        CONTEXT_CACHE.set(key, result);
+      }
+    }
+    this.blockContexts.set(block, result);
+    return result;
   }
 
   private declaration(text: string, s: number): void {
