@@ -1,0 +1,57 @@
+// Hover any value below: final color, resolution chain, source link and WCAG contrast.
+@use 'sass:color';
+@use 'sass:map';
+@use 'tokens/colors';                      // default namespace: colors
+@use 'tokens' as t;                        // index file (_index.scss)
+@use 'brand';                              // @forward ... as brand-*
+@use 'theme' with ($primary: #7c3aed);     // configures a !default variable
+@use 'pkg:@acme/tokens' as acme;           // node package (package.json "exports")
+
+// 1. Sass modules
+.modules {
+  color: colors.$purple;
+  background: t.$green;
+  border-color: brand.$brand-amber;
+  outline-color: theme.$primary;          // #7c3aed thanks to with()
+  fill: acme.$accent;
+}
+
+// 2. Color functions (computed exactly like dart-sass)
+.functions {
+  color: darken(colors.$purple, 10%);
+  background: lighten(t.$green, 20%);
+  border-color: rgba(colors.$purple, .5);
+  outline-color: mix(t.$green, colors.$purple, 25%);
+  fill: color.adjust(t.$amber, $hue: -20deg);
+  stroke: color.scale(colors.$purple, $lightness: 40%);
+  caret-color: theme.tint-color(theme.$primary, 30%);
+  column-rule-color: map.get(theme.$theme-colors, 'success');
+  text-decoration-color: theme.$primary-hover;
+}
+
+// 3. Chained variables
+$brand: colors.$purple;
+$brand-hover: darken($brand, 8%);
+
+.chains {
+  color: $brand;
+  background: $brand-hover;
+}
+
+// 4. Custom properties: Sass only evaluates #{} interpolation inside them
+:root {
+  --brand: #{$brand};
+  --brand-soft: #{rgba($brand, .15)};
+  --not-evaluated: $brand; // raw text for the browser: no swatch
+}
+
+.custom-properties {
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-color: var(--undefined-token, var(--brand));
+}
+
+// Unresolvable values never show a fake color
+@mixin tinted($c) {
+  color: $c; // a mixin parameter: unknown until @include
+}

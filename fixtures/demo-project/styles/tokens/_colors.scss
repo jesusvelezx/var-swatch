@@ -1,0 +1,7 @@
+// Design tokens. Every variable is !default so consumers can configure them.
+$purple: #7c3aed !default;
+$green: #10b981 !default;
+$amber: #f59e0b !default;
+$red: #dc2626 !default;
+$gray-900: #111827 !default;
+$-internal: #000; // private: not visible through @use

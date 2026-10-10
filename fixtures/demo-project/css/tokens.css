@@ -1,0 +1,24 @@
+:root {
+  --purple: #7c3aed;
+  --green: #10b981;
+  --primary: var(--purple);
+  --accent: var(--green);
+  --bs-primary-rgb: 13, 110, 253;
+  --surface: light-dark(#ffffff, #0b1020);
+}
+
+/* Theme overrides: hover a var() to see every variant */
+[data-theme="dark"] {
+  --purple: #a78bfa;
+  --green: #34d399;
+}
+
+html.high-contrast {
+  --purple: #5b21b6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --purple: #c4b5fd;
+  }
+}

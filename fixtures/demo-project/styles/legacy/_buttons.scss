@@ -1,0 +1,10 @@
+// This partial has no imports: it's resolved in the context of main.scss,
+// which @imports _variables.scss first.
+.btn-primary {
+  background: $primary;
+  border-color: darken($primary, 7.5%);
+}
+
+.btn-link {
+  color: $link-color;
+}

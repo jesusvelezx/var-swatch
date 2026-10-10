@@ -1,0 +1,20 @@
+@use 'sass:color';
+@use 'sass:map';
+
+$primary: #2563eb !default;
+$primary-hover: color.adjust($primary, $lightness: -8%);
+$surface: color.scale($primary, $lightness: 92%);
+
+$theme-colors: (
+  'primary': $primary,
+  'success': #16a34a,
+  'danger': #dc2626,
+) !default;
+
+@function tint-color($color, $weight) {
+  @return mix(white, $color, $weight);
+}
+
+@function shade-color($color, $weight) {
+  @return mix(black, $color, $weight);
+}

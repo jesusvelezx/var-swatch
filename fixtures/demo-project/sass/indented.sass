@@ -1,0 +1,9 @@
+@use '../styles/tokens' as t
+
+$accent: lighten(t.$purple, 15%)
+
+.hero
+  color: $accent
+  background: rgba(t.$green, .2)
+  &:hover
+    border-color: t.$amber

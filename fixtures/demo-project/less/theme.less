@@ -1,0 +1,11 @@
+@import "variables";
+
+@brand: @purple;
+@brand-hover: darken(@brand, 10%);
+
+.card {
+  color: @brand;
+  background: fade(@brand, 15%);
+  border-color: @brand-hover;
+  outline-color: spin(@brand, 30);
+}

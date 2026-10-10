@@ -1,0 +1,17 @@
+.button {
+  background: var(--primary);                       /* chain: --primary → --purple */
+  color: var(--accent);
+  border: 1px solid var(--missing, var(--primary)); /* nested fallback */
+  outline-color: var(--missing, #f43f5e);           /* literal fallback */
+  box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .25);
+}
+
+.mixes {
+  color: color-mix(in oklch, var(--purple) 60%, white);
+  background: color-mix(in srgb, var(--primary), transparent 70%);
+  border-color: var(--surface);
+}
+
+.unknown {
+  color: var(--not-defined-anywhere); /* no swatch: never a fake color */
+}

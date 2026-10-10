@@ -1,0 +1,2 @@
+// Re-exports the tokens with a prefix: brand.$brand-purple
+@forward 'tokens' as brand-* hide $brand-red;

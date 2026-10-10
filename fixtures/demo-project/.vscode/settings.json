@@ -1,0 +1,3 @@
+{
+  "varSwatch.include": ["**/*.{css,scss,sass,less,vue,svelte,astro,html}"]
+}

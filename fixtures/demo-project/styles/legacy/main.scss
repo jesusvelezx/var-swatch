@@ -1,0 +1,7 @@
+$primary: #7c3aed; // overrides the !default in _variables
+@import 'variables';
+@import 'buttons';
+
+a {
+  color: $link-color; // #7c3aed: the override wins over !default
+}

@@ -1,0 +1,11 @@
+---
+const title = 'Var Swatch';
+---
+<h1>{title}</h1>
+
+<style>
+  h1 {
+    color: var(--primary);
+    text-decoration-color: color-mix(in srgb, var(--green), black 20%);
+  }
+</style>
