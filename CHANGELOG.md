@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-10
+
+### Changed
+
+- Marketplace metadata (publisher, gallery banner, categories, keywords, repository links) and extension icon.
+
 ## [0.1.0] - 2026-10-10
 
 ### Added
