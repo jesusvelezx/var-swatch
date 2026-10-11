@@ -2,7 +2,7 @@
   "name": "var-swatch",
   "displayName": "Var Swatch",
   "description": "See the real color behind every CSS and SCSS variable — resolved through chains, @use modules, color functions and themes.",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "publisher": "uxjesus",
   "author": {
     "name": "Jesús Cedeño Vélez",
