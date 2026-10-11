@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `varSwatch.decoration.highlight` setting: paints each resolved variable with its own color as a background.
+- `varSwatch.decoration.highlightOpacity` setting (0–1) to tone down the highlight background.
+
 ## [0.1.2] - 2026-10-10
 
 ### Changed

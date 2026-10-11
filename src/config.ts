@@ -10,6 +10,8 @@ export interface Config {
   loadPaths: string[];
   themes: boolean;
   decorationStyle: DecorationStyle;
+  highlight: boolean;
+  highlightOpacity: number;
   hover: boolean;
 }
 
@@ -23,6 +25,8 @@ export function readConfig(): Config {
     loadPaths: c.get('loadPaths', []),
     themes: c.get('themes.enable', true),
     decorationStyle: c.get<DecorationStyle>('decoration.style', 'inline+variants'),
+    highlight: c.get('decoration.highlight', false),
+    highlightOpacity: Math.min(1, Math.max(0, c.get('decoration.highlightOpacity', 1))),
     hover: c.get('hover.enable', true),
   };
 }

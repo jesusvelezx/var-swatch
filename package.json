@@ -125,6 +125,18 @@
           "default": "inline+variants",
           "description": "How resolved colors are displayed inline."
         },
+        "varSwatch.decoration.highlight": {
+          "type": "boolean",
+          "default": false,
+          "description": "Paint the variable name itself with its resolved color (with a readable black or white text color), in addition to the inline swatches."
+        },
+        "varSwatch.decoration.highlightOpacity": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Opacity of the highlight background, from 0 (transparent) to 1 (solid). Below 0.5 the text keeps the theme's color."
+        },
         "varSwatch.hover.enable": {
           "type": "boolean",
           "default": true,

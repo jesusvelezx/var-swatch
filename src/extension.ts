@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import * as vscode from 'vscode';
 import { Analyzer, type Swatch, type Target } from './core/analyze';
 import { type Color, clipToGamut, toHex, toHslString, toRgbString, toCss } from './core/color/color';
+import { BLACK, contrastRatio, WHITE } from './core/color/contrast';
 import { buildHover, type HoverLinks } from './core/hover';
 import { type Entry, Project } from './core/project';
 import type { Host } from './core/sassResolve';
@@ -69,6 +70,8 @@ class VarSwatch implements vscode.Disposable {
   private readonly variantTypes = [0, 1, 2].map(() =>
     vscode.window.createTextEditorDecorationType({ rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed }),
   );
+  /** Highlight backgrounds can't be set per range, so there is one decoration type per color pair. */
+  private readonly highlightTypes = new Map<string, vscode.TextEditorDecorationType>();
   private readonly output = vscode.window.createOutputChannel('Var Swatch', { log: true });
 
   constructor() {
@@ -108,6 +111,7 @@ class VarSwatch implements vscode.Disposable {
     this.colorProvider?.dispose();
     for (const w of this.watchers) w.dispose();
     for (const d of this.disposables) d.dispose();
+    for (const t of this.highlightTypes.values()) t.dispose();
   }
 
   // -------------------------------------------------------------------------
@@ -385,10 +389,46 @@ class VarSwatch implements vscode.Disposable {
   // Theme variant decorations
   // -------------------------------------------------------------------------
 
+  private highlightType(color: Color): { key: string; type: vscode.TextEditorDecorationType } {
+    const clipped = clipToGamut(color);
+    const bg = { ...clipped, a: clipped.a * this.config.highlightOpacity };
+    // Translucent colors blend with the unknown editor background: keep the theme's text color.
+    const fg = bg.a < 0.5 ? undefined : contrastRatio(WHITE, { ...bg, a: 1 }) >= contrastRatio(BLACK, { ...bg, a: 1 }) ? '#ffffff' : '#000000';
+    const key = `${toCss(bg)}|${fg ?? ''}`;
+    let type = this.highlightTypes.get(key);
+    if (!type) {
+      type = vscode.window.createTextEditorDecorationType({
+        rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+        backgroundColor: toCss(bg),
+        color: fg,
+        borderRadius: '3px',
+      });
+      this.highlightTypes.set(key, type);
+    }
+    return { key, type };
+  }
+
   private updateDecorations(): void {
+    const usedHighlights = new Set<string>();
     for (const editor of vscode.window.visibleTextEditors) {
       const doc = editor.document;
-      const a = this.usesInlineColors() || this.usesVariantColors() ? this.analysis(doc) : undefined;
+      const a =
+        this.usesInlineColors() || this.usesVariantColors() || this.config.highlight ? this.analysis(doc) : undefined;
+      const highlights = new Map<string, vscode.Range[]>();
+      if (this.config.highlight && a) {
+        for (const s of a.swatches) {
+          const { key } = this.highlightType(s.color);
+          const ranges = highlights.get(key) ?? [];
+          // Paint `$var` rather than the whole `#{$var}` interpolation.
+          const m = /^#\{(\s*)(.*?)\s*\}$/s.exec(doc.getText(new vscode.Range(doc.positionAt(s.start), doc.positionAt(s.end))));
+          const start = m ? s.start + 2 + m[1].length : s.start;
+          const end = m ? start + m[2].length : s.end;
+          ranges.push(new vscode.Range(doc.positionAt(start), doc.positionAt(end)));
+          highlights.set(key, ranges);
+          usedHighlights.add(key);
+        }
+      }
+      for (const [key, type] of this.highlightTypes) editor.setDecorations(type, highlights.get(key) ?? []);
       if (this.usesInlineColors() && a) {
         const options: vscode.DecorationOptions[] = [];
         for (const s of a.swatches) {
@@ -444,6 +484,12 @@ class VarSwatch implements vscode.Disposable {
         }
         editor.setDecorations(type, options);
       });
+    }
+    // Drop color pairs no visible editor uses anymore so edits don't accumulate decoration types.
+    for (const [key, type] of this.highlightTypes) {
+      if (usedHighlights.has(key)) continue;
+      type.dispose();
+      this.highlightTypes.delete(key);
     }
   }
 }
